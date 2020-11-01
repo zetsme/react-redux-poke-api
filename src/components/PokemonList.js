@@ -7,7 +7,8 @@ import ReactPaginate from 'react-paginate';
 
 const PokemonList = () => {
   const history = useHistory();
-  const [perPage, setPerPage] = useState(15);
+  const [width, setWidth] = useState(window.innerWidth);
+  const [perPage, setPerPage] = useState(window.innerWidth > 768 ? 15 : 12);
   const [search, setSearch] = useState('');
   const dispatch = useDispatch();
   const pokemonList = useSelector((state) => state.PokemonList);
@@ -15,6 +16,14 @@ const PokemonList = () => {
     fetchData(1, perPage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [perPage]);
+  const handlePerPage = (e) => {
+    e.target.value <= 1 ? setPerPage(1) : setPerPage(e.target.value);
+  };
+  const changeWindowWidth = () => setWidth(window.innerWidth);
+  useEffect(() => {
+    window.addEventListener('resize', changeWindowWidth);
+    return () => window.removeEventListener('resize', changeWindowWidth);
+  }, []);
   const fetchData = (page = 1, perPage) => {
     dispatch(getPokemonList(page, perPage));
   };
@@ -24,11 +33,11 @@ const PokemonList = () => {
     if (!_.isEmpty(pokemonList.data)) {
       return (
         <div className='pokemon__list'>
+          <p>Click on pokemon name to view more</p>
           {pokemonList.data.map((item, index) => {
             return (
               <div key={index} className='pokemon__item'>
-                <p>{item.name}</p>
-                <Link to={`/pokemon/${item.name}`}>View More</Link>
+                <Link to={`/pokemon/${item.name}`}>{item.name}</Link>
               </div>
             );
           })}
@@ -41,38 +50,41 @@ const PokemonList = () => {
   return (
     <div>
       <div className='search__container'>
-        <label>
-          Search
-          <input
-            type='text'
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <button onClick={() => history.push(`/pokemon/${search}`)}>
-            Find Pokemon
-          </button>
-        </label>
+        <input
+          className='search__input'
+          type='text'
+          value={search}
+          onChange={(e) => setSearch(e.target.value.toLowerCase())}
+          placeholder='Enter pokemon name'
+        />
+        <button
+          className='search__btn'
+          onClick={() => history.push(`/pokemon/${search}`)}
+        >
+          Find Pokemon
+        </button>
       </div>
       <div className='perPage__container'>
-        <label>
-          Per Page
-          <input
-            type='number'
-            value={perPage}
-            onChange={(e) => setPerPage(e.target.value)}
+        {!_.isEmpty(pokemonList.data) && (
+          <ReactPaginate
+            pageCount={Math.ceil(pokemonList.count / perPage)}
+            previousLabel={'<'}
+            nextLabel={'>'}
+            pageRangeDisplayed={2}
+            marginPagesDisplayed={1}
+            containerClassName='pagination'
+            activeLinkClassName='pagination__active'
+            onPageChange={(data) => fetchData(data.selected + 1, perPage)}
           />
-        </label>
+        )}
+        {width >= 768 && (
+          <label>
+            Pokemons per page
+            <input type='number' value={perPage} onChange={handlePerPage} />
+          </label>
+        )}
       </div>
       {ShowData()}
-      {!_.isEmpty(pokemonList.data) && (
-        <ReactPaginate
-          pageCount={Math.ceil(pokemonList.count / perPage)}
-          pageRangeDisplayed={2}
-          marginPagesDisplayed={1}
-          containerClassName='pagination'
-          onPageChange={(data) => fetchData(data.selected + 1, perPage)}
-        />
-      )}
     </div>
   );
 };

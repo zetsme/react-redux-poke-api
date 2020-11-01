@@ -5,16 +5,26 @@ import PokemonList from './components/PokemonList';
 
 const App = () => {
   return (
-    <div>
-      <nav>
-        <NavLink to='/'>Home</NavLink>
+    <>
+      <nav className='nav'>
+        <div className='nav__container'>
+          <NavLink to='/'>
+            <img
+              src='http://pngimg.com/uploads/pokeball/pokeball_PNG32.png'
+              alt=''
+            />
+            Home
+          </NavLink>
+        </div>
       </nav>
-      <Switch>
-        <Route exact path='/' component={PokemonList} />
-        <Route path='/pokemon/:pokemonName' component={Pokemon} />
-        <Redirect to='/' />
-      </Switch>
-    </div>
+      <div className='container'>
+        <Switch>
+          <Route exact path='/' component={PokemonList} />
+          <Route path='/pokemon/:pokemonName' component={Pokemon} />
+          <Redirect to='/' />
+        </Switch>
+      </div>
+    </>
   );
 };
 

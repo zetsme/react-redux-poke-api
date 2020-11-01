@@ -20,8 +20,20 @@ const Pokemon = () => {
         <div className='pokemon__container'>
           <div>
             <h2>Sprites</h2>
-            <img src={pokemonData.sprites.front_default} alt={pokemonName} />
-            <img src={pokemonData.sprites.back_default} alt={pokemonName} />
+            <img
+              src={
+                pokemonData.sprites.front_default ||
+                'http://pngimg.com/uploads/pokeball/pokeball_PNG32.png'
+              }
+              alt={pokemonName}
+            />
+            <img
+              src={
+                pokemonData.sprites.back_default ||
+                'http://pngimg.com/uploads/pokeball/pokeball_PNG32.png'
+              }
+              alt={pokemonName}
+            />
           </div>
           <div>
             <h2>Types:</h2>
@@ -54,7 +66,9 @@ const Pokemon = () => {
   };
   return (
     <div className='pokemon'>
-      <h1 className='pokemon__name'>{pokemonName}</h1>
+      <div>
+        <h1 className='pokemon__name'>{pokemonName}</h1>
+      </div>
       {showData()}
     </div>
   );
